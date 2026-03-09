@@ -1,56 +1,8 @@
-const DEFAULT_DEV_API_BASE_URL = 'http://127.0.0.1:5000';
-const RAW_API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').trim();
+const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000';
 
-function trimTrailingSlashes(value) {
-  return value.replace(/\/+$/, '');
-}
-
-function resolveApiBaseUrl() {
-  if (!RAW_API_BASE_URL) {
-    return import.meta.env.DEV ? DEFAULT_DEV_API_BASE_URL : '';
-  }
-
-  if (RAW_API_BASE_URL.startsWith('/')) {
-    return trimTrailingSlashes(RAW_API_BASE_URL);
-  }
-
-  let parsedUrl;
-  try {
-    parsedUrl = new URL(RAW_API_BASE_URL);
-  } catch {
-    throw new Error(
-      'VITE_API_BASE_URL must be a valid absolute URL (for example https://api.example.com) or a relative path.',
-    );
-  }
-
-  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-    throw new Error('VITE_API_BASE_URL must use http:// or https://.');
-  }
-
-  const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(parsedUrl.hostname);
-  if (import.meta.env.PROD && parsedUrl.protocol !== 'https:' && !isLocalHost) {
-    throw new Error('In production, VITE_API_BASE_URL must use HTTPS.');
-  }
-
-  return trimTrailingSlashes(parsedUrl.toString());
-}
-
-let API_BASE_URL = '';
-let apiConfigError = '';
-
-try {
-  API_BASE_URL = resolveApiBaseUrl();
-} catch (error) {
-  apiConfigError = error instanceof Error ? error.message : 'Invalid API configuration.';
-}
-
-export { API_BASE_URL };
+export const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, '');
 
 async function request(path, options = {}) {
-  if (apiConfigError) {
-    throw new Error(apiConfigError);
-  }
-
   const { method = 'GET', body } = options;
   const headers = {
     Accept: 'application/json',

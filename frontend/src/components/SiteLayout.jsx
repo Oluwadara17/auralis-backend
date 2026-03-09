@@ -16,11 +16,8 @@ function RouteEffects() {
       '/journals': `${siteMeta.shortName} | Journals`,
       '/contact': `${siteMeta.shortName} | Contact`,
       '/volunteer': `${siteMeta.shortName} | Apply`,
+      '/admin': `${siteMeta.shortName} | Content Admin`,
     };
-
-    if (import.meta.env.DEV || import.meta.env.VITE_ENABLE_ADMIN === 'true') {
-      pageTitles['/admin'] = `${siteMeta.shortName} | Content Admin`;
-    }
 
     if (location.pathname.startsWith('/journals/')) {
       document.title = `${siteMeta.shortName} | Journal Article`;
